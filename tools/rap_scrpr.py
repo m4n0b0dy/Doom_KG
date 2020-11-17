@@ -2,9 +2,10 @@ import json
 import re
 from bs4 import BeautifulSoup
 import urllib
+import urllib.request
 import time
 from multiprocessing.pool import ThreadPool as Pool
-thread_count = 100
+thread_count = 4
 #I don't like using try excepts but for scraping you don't want the whole thing to fail on an anamoloy
 def pull_links(page_link, app, sng_scr=False):
 	ret_list = []
@@ -18,10 +19,10 @@ def pull_links(page_link, app, sng_scr=False):
 			    link = match.group(1)
 			    title = lines[1][:-4]
 			    ret_list.append(app + link)
-	except:
+	except Exception as e:
 		#dont need notification of this
 		if "//anonymous" not in page_link:
-			print("Couldn't load", page_link)
+			print("Couldn't load", page_link,e)
 	return ret_list
 
 #find links to an artist's song
