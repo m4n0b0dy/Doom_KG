@@ -5,7 +5,7 @@ import urllib
 import urllib.request
 import time
 from multiprocessing.pool import ThreadPool as Pool
-thread_count = 100
+thread_count = 200
 #I don't like using try excepts but for scraping you don't want the whole thing to fail on an anamoloy
 def pull_links(page_link, app, sng_scr=False):
 	ret_list = []
@@ -42,7 +42,7 @@ def song_links(page_link, slept=.1):
 	return list(song_list)
 
 #scrape the links
-def song_scrape(links, slept=.001):
+def song_scrape(links, slept=.0001):
 	song_text = []
 	for song in links:
 		#was getting 403 errors from bad pages and effecting good pages
