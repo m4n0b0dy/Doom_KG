@@ -5,7 +5,7 @@ import urllib
 import urllib.request
 import time
 from multiprocessing.pool import ThreadPool as Pool
-thread_count = 4
+thread_count = 100
 #I don't like using try excepts but for scraping you don't want the whole thing to fail on an anamoloy
 def pull_links(page_link, app, sng_scr=False):
 	ret_list = []
