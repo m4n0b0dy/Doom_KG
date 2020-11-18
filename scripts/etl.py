@@ -21,12 +21,12 @@ def etl_file(file):
 		alb_sng_rels = []
 		
 		for song in songs:
-			alb_sng_rels.append({'album_node':album, 'song_node':song, 'typ':'contains_song'})
+			alb_sng_rels.append({'album_node':album, 'song_node':song+'_'+album, 'typ':'contains_song'})
 			for name in list_of_names:
 				if 'raw_song_' in name:
 					continue
 				name = name.strip().lower()
-				art_sng_rels.append({'artist_node':name, 'song_node':song, 'typ':'raps_on'})
+				art_sng_rels.append({'artist_node':name, 'song_node':song+'_'+album, 'typ':'raps_on'})
 		return art_sng_rels, alb_sng_rels
 
 
