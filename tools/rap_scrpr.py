@@ -2,10 +2,14 @@ import json
 import re
 from bs4 import BeautifulSoup
 import urllib
+from os import listdir
+from os.path import isfile, join
 import urllib.request
 import time
 from multiprocessing.pool import ThreadPool as Pool
-thread_count = 200
+thread_count = 100
+
+ALL_FILES = set([f for f in listdir('../data/json_lyrics/') if isfile(join('../data/json_lyrics/', f))])
 #I don't like using try excepts but for scraping you don't want the whole thing to fail on an anamoloy
 def pull_links(page_link, app, sng_scr=False):
 	ret_list = []
@@ -101,12 +105,16 @@ def raw_clean(song_texts):
 	return song_data
 
 def multi_run(link, art):
+	art_name = art.replace('_','').replace('/','-')+'.json'
+	if art_name in ALL_FILES:
+		return
+
 	print(art)
 	page = 'http://ohhla.com/'+link
 	t = time.time()
 	scraped_songs = raw_clean(song_scrape(song_links(page)))
 	#back up scrape to json after clean
-	with open('../data/json_lyrics/'+art.replace('_','')+'.json', 'w') as outfile:
+	with open('../data/json_lyrics/'+art_name, 'w') as outfile:
 		json.dump(scraped_songs, outfile)
 	print(art+'.json made!', time.time()-t)
 
