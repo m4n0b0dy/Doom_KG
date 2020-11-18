@@ -2,9 +2,14 @@ import json
 import re
 from bs4 import BeautifulSoup
 import urllib
+from os import listdir
+from os.path import isfile, join
+import urllib.request
 import time
 from multiprocessing.pool import ThreadPool as Pool
 thread_count = 100
+
+ALL_FILES = set([f for f in listdir('../data/json_lyrics/') if isfile(join('../data/json_lyrics/', f))])
 #I don't like using try excepts but for scraping you don't want the whole thing to fail on an anamoloy
 def pull_links(page_link, app, sng_scr=False):
 	ret_list = []
@@ -18,10 +23,10 @@ def pull_links(page_link, app, sng_scr=False):
 			    link = match.group(1)
 			    title = lines[1][:-4]
 			    ret_list.append(app + link)
-	except:
+	except Exception as e:
 		#dont need notification of this
 		if "//anonymous" not in page_link:
-			print("Couldn't load", page_link)
+			print("Couldn't load", page_link,e)
 	return ret_list
 
 #find links to an artist's song
@@ -41,7 +46,7 @@ def song_links(page_link, slept=.1):
 	return list(song_list)
 
 #scrape the links
-def song_scrape(links, slept=.001):
+def song_scrape(links, slept=.0001):
 	song_text = []
 	for song in links:
 		#was getting 403 errors from bad pages and effecting good pages
@@ -100,12 +105,16 @@ def raw_clean(song_texts):
 	return song_data
 
 def multi_run(link, art):
+	art_name = art.replace('_','').replace('/','-')+'.json'
+	if art_name in ALL_FILES:
+		return
+
 	print(art)
 	page = 'http://ohhla.com/'+link
 	t = time.time()
 	scraped_songs = raw_clean(song_scrape(song_links(page)))
 	#back up scrape to json after clean
-	with open('../data/json_lyrics/'+art.replace('_','')+'.json', 'w') as outfile:
+	with open('../data/json_lyrics/'+art_name, 'w') as outfile:
 		json.dump(scraped_songs, outfile)
 	print(art+'.json made!', time.time()-t)
 
