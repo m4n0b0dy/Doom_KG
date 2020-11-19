@@ -1,1 +1,1 @@
-docker run -p 7474:7474 -p 7687:7687 --env NEO4J_AUTH=neo4j/test --name rap_kg neo4j:latest
+docker run -v /home/nbdy/projects/Doom_KG/data/csvs:/var/lib/neo4j/import/csvs -p 7474:7474 -p 7687:7687 --env NEO4J_AUTH=neo4j/test --name doom_kg neo4j:latest
