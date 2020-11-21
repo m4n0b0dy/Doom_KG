@@ -22,7 +22,6 @@ def processSubjectObjectPairs(tokens, entities):
     subjectConstruction = ''
     objectConstruction = ''
     for token in tokens:
-        #printToken(token)
         if "punct" in token.dep_:
             continue
         if isRelationCandidate(token):
@@ -66,25 +65,77 @@ def printGraph(triples):
     plt.axis('off')
     plt.show()
 
-REL_TYPES = [('relate','related to'),
-             ('interacted','related to'),
-             ('perform','performed with'),
-             ('worked with','performed with'),
+REL_TYPES = [('relate','relation'),
+             ('perform with','relation_bool'),
+             ('worked with','relation_bool'),
+             ('make','relation_bool'),
+             ('sing on','relation_bool'),
+             ('rap on','relation_bool'),
+             ('sing','open_query'),
+             ('rap','open_query'),
              ('count','count'),
             ('many','count'),
             ('amount','count')]
 
-def findClosestMatch(rel, nlp_model):
+def findClosestMatch(rel, nlp_model, obj_exist=True):
     rel_vec = nlp_model(rel).vector
     cls_dist = 1
     mtch = None
     for rel_typ in REL_TYPES:
         _dist = cosine(rel_vec, nlp_model(rel_typ[0]).vector)
         if _dist < cls_dist:
+            if obj_exist and rel_typ[1] == 'open_query':
+                continue
             cls_dist = _dist
             mtch = rel_typ[1]
     return mtch, cls_dist
-            
         
-        
+def cypher_relation(subj,obj):
+    query = '''
+    MATCH p=(n)-[*3]-(m)
+    WHERE toLower(n.name) = "{subj}"
+    AND toLower(m.name) = "{obj}"
+    RETURN p
+    '''.format(subj=subj, obj=obj)
+    return query
+
+def cypher_relation_bool(subj,obj):
+    query = '''
+    MATCH (n),(m)
+    WHERE toLower(n.name) = "{subj}"
+    AND toLower(m.name) = "{obj}"
+    RETURN exists((n)-[*3]-(m))
+    '''.format(subj=subj, obj=obj)
+    return query
+
+def cypher_open_query(subj,obj):
+    query = '''
+    MATCH (n)--(m)
+    WHERE toLower(n.name) = "{subj}"
+    RETURN m
+    '''.format(subj=subj)
+    return query
+
+def cypher_count(subj,obj):
+    query = '''
+    MATCH r=(n)--(:Song)--(m)
+    WHERE toLower(n.name) = "{subj}"
+    AND toLower(m.name) = "{obj}"
+    RETURN COUNT(r)
+    '''.format(subj=subj, obj=obj)
+    return query
+
+
+def run_cypher_query(subj, rel, obj, sess):
+    subj, rel, obj = subj.lower(), rel.lower(), obj.lower()
+    if rel=='relation':
+        query=cypher_relation(subj, obj)
+    elif rel=='relation_bool':
+        query=cypher_relation_bool(subj, obj)
+    elif rel=='open_query':
+        query=cypher_open_query(subj, obj)
+    elif rel=='count':
+        query=cypher_count(subj, obj)
+    query = query.replace('\n','')
+    return query, sess.run(query)
     
