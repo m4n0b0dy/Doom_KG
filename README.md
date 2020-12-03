@@ -1,6 +1,6 @@
 # Hip-Hop Song/Artist/Album Knowledge Graph
 
-## Scraping http://www.ohhla.com/, ETL for Raw Text to Node/Edge, and Ingestion to Neo4j GraphDB
+## Scraped http://www.ohhla.com/, Performed ETL to transform Raw Text to Node/Edge CSVs, Ingested to Neo4j GraphDB, Wrote Semantic Triple Extraction for Templated Cypher Queries
 
 ## Project ToDos
 - [x] Scrape all rappers and songs from ohhla
