@@ -1,4 +1,4 @@
-# Hip-Hop (Song)--(Artist)--(Album) Neo4j Knowledge Graph
+# Hip-Hop (Song)--(Artist)--(Album) Knowledge Graph
 
 ## Scraped [Hip-Hop Archive](http://www.ohhla.com/), Performed ETL to transform Raw Text to Node/Edge CSVs, Ingested to Neo4j GraphDB, Wrote Semantic Triple Extraction for Templated Cypher Queries
 
